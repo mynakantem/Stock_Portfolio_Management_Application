@@ -1,5 +1,11 @@
 package com.stockapp.repository;
 
-public class AlertRepository {
+import com.stockapp.model.Alert;
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
+public interface AlertRepository extends JpaRepository<Alert, Long> {
+	List<Alert> findBySymbol(String symbol);
 }
+
+
