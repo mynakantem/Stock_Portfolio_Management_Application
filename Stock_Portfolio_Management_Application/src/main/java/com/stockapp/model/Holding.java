@@ -1,10 +1,15 @@
 package com.stockapp.model;
 
 public class Holding {
-<<<<<<< Updated upstream
 
 }
-=======
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "holdings")
+public class Holding {
+
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +27,7 @@ public class Holding {
     @ManyToOne
     @JoinColumn(name = "portfolio_id")
     private Portfolio portfolio;
-   
+
     
     // Default Constructor
     public Holding() {
@@ -76,4 +81,4 @@ public class Holding {
         this.portfolio = portfolio;
     }
 }
->>>>>>> Stashed changes
+

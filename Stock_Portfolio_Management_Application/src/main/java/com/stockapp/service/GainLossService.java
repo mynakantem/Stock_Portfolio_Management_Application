@@ -1,4 +1,3 @@
-/*
 package com.stockapp.service;
 
 import com.stockapp.model.*;
@@ -79,4 +78,4 @@ public class GainLossService {
         return gainLossRepository.getTotalPortfolioGain(portfolioId, date);
     }
 }
-*/
+}

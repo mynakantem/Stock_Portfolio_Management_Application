@@ -1,9 +1,7 @@
 package com.stockapp.configuration;
 
-<<<<<<< Updated upstream
 public class SpringSecurityConfig {
 
-=======
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,5 +21,4 @@ public class SpringSecurityConfig {
             );
         return http.build();
     }
->>>>>>> Stashed changes
 }
