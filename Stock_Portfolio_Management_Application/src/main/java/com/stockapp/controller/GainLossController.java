@@ -1,38 +1,42 @@
 package com.stockapp.controller;
 
-import com.stockapp.dto.GainLossDTO;
+import com.stockapp.model.GainLoss;
 import com.stockapp.service.GainLossService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/gainloss")
 public class GainLossController {
     
+    private static final Logger log = LoggerFactory.getLogger(GainLossController.class);
+    
     @Autowired
     private GainLossService gainLossService;
     
-    // Calculate gain/loss for a portfolio
-    @GetMapping("/calculate/{portfolioId}")
-    public ResponseEntity<List<GainLossDTO>> calculateGainLoss(@PathVariable Long portfolioId) {
-        List<GainLossDTO> gainLossList = gainLossService.calculateGainLoss(portfolioId);
-        return new ResponseEntity<>(gainLossList, HttpStatus.OK);
+    // Per-stock gain/loss
+    @GetMapping("/stocks/{portfolioId}")
+    public List<GainLoss> getStockGainLoss(@PathVariable Long portfolioId) {
+        log.info("Getting stock gain/loss for portfolio: {}", portfolioId);
+        return gainLossService.calculateStockGainLoss(portfolioId);
     }
     
-    // Get all gain/loss records
-    @GetMapping("/all")
-    public ResponseEntity<List<GainLossDTO>> getAllGainLoss() {
-        List<GainLossDTO> gainLossList = gainLossService.getAllGainLoss();
-        return new ResponseEntity<>(gainLossList, HttpStatus.OK);
-    }
-    
-    // Get total portfolio gain/loss
+    // Total portfolio gain/loss
     @GetMapping("/total/{portfolioId}")
-    public ResponseEntity<GainLossDTO> getTotalPortfolioGainLoss(@PathVariable Long portfolioId) {
-        GainLossDTO totalGainLoss = gainLossService.calculateTotalPortfolioGainLoss(portfolioId);
-        return new ResponseEntity<>(totalGainLoss, HttpStatus.OK);
+    public Double getTotalPortfolioGainLoss(@PathVariable Long portfolioId) {
+        log.info("Getting total portfolio gain/loss for: {}", portfolioId);
+        return gainLossService.calculateTotalPortfolioGainLoss(portfolioId);
+    }
+    
+    // Daily portfolio gain/loss tracking
+    @GetMapping("/daily/{portfolioId}")
+    public Double getDailyPortfolioGainLoss(@PathVariable Long portfolioId, 
+                                           @RequestParam String date) {
+        log.info("Getting daily gain/loss for portfolio: {} on date: {}", portfolioId, date);
+        return gainLossService.getDailyPortfolioGainLoss(portfolioId, LocalDate.parse(date));
     }
 }
