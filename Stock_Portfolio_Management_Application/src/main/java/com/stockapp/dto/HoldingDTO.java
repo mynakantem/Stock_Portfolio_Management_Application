@@ -1,12 +1,27 @@
 package com.stockapp.dto;
 
+import jakarta.validation.constraints.*;
+
 public class HoldingDTO {
     
     private Long id;
+    
+    @NotBlank(message = "Stock symbol is required")
+    @Pattern(regexp = "^[A-Z]{1,10}$", message = "Symbol must be 1-10 uppercase letters")
     private String symbol;
+    
+    @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be at least 1")
     private Integer quantity;
+    
+    @NotNull(message = "Buy price is required")
+    @DecimalMin(value = "0.01", message = "Buy price must be greater than 0")
     private Double buyPrice;
+    
     private Long portfolioId;
+    private Double currentPrice;
+    private Double gainAmount;
+    private Double gainPercentage;
     
     // Default Constructor
     public HoldingDTO() {
@@ -60,5 +75,29 @@ public class HoldingDTO {
     
     public void setPortfolioId(Long portfolioId) {
         this.portfolioId = portfolioId;
+    }
+    
+    public Double getCurrentPrice() {
+        return currentPrice;
+    }
+    
+    public void setCurrentPrice(Double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+    
+    public Double getGainAmount() {
+        return gainAmount;
+    }
+    
+    public void setGainAmount(Double gainAmount) {
+        this.gainAmount = gainAmount;
+    }
+    
+    public Double getGainPercentage() {
+        return gainPercentage;
+    }
+    
+    public void setGainPercentage(Double gainPercentage) {
+        this.gainPercentage = gainPercentage;
     }
 }
