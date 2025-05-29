@@ -3,14 +3,28 @@ package com.stockapp.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "Alerts")
 public class Alert {
 	 @Id
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)
-	 public Long id;
-	 
-	 public String symbol;
-	 public String alertType;
-	 public double thresholdValue;
+	 private Long id;
+	  @Column(nullable = false, length = 10)
+	 private String symbol;
+	  @Column(nullable = false)
+	 private String alertType;
+	  @Column(nullable = false)
+	 private double thresholdValue;
+	  
+	  // default constructor
+	  public Alert() {	  
+	  }
+	
+	  public Alert(Long id, String symbol, String alertType, double thresholdValue) {
+	        this.id = id;
+	        this.symbol = symbol;
+	        this.alertType = alertType;
+	        this.thresholdValue = thresholdValue;
+	    }
 	 
 	 //getter
 	    public Long getId() {
@@ -25,6 +39,7 @@ public class Alert {
 	    public double getThresholdValue() {
 	        return thresholdValue;
 	    }
+	    
 	    //setter
 	    public void setId(Long id) {
 	        this.id = id;
