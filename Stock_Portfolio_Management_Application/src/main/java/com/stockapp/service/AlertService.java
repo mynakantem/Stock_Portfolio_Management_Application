@@ -1,30 +1,33 @@
 package com.stockapp.service;
 
-
 import com.stockapp.dto.AlertDTO;
 import com.stockapp.repository.AlertRepository;
 import com.stockapp.model.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.stockapp.service.StockPriceCache;
+import com.stockapp.exception.AlertNotFoundException;
 import java.math.BigDecimal; 
-
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AlertService {
-	
+	// logger for tracking actions
+	private static final Logger logger = LoggerFactory.getLogger(AlertService.class);
 	// injecting the Alert repository for interacting with the database. 
 	@Autowired
 	private AlertRepository alertRepository;
 	@Autowired
 	private StockPriceCache stockPriceCache;
 	
-	// this method to get all the alerts from database and return them as DTO
+	//  This method retrives all the alerts from database and converts them into AlertDTOs for response.
 	public List<AlertDTO> getAllAlerts() {
+		logger.info("Fetching all alerts from the database");
 		 List<Alert> alertList = alertRepository.findAll();
 	        List<AlertDTO> dtoList = new ArrayList<>();
 	        for (Alert alert : alertList) {
@@ -34,60 +37,82 @@ public class AlertService {
 	        return dtoList;
 	    }
 	
-	// method to create a new alert
+	// this method to create a new alert from AlertDTO and stores them in database
 	public AlertDTO createAlert(AlertDTO dto) {
+		logger.info("Creating alert for symbol: {}", dto.getSymbol());
 		Alert alert = convertToEntity(dto); // convert DTO to an Entity
 		Alert savedAlert = alertRepository.save(alert); // save the alert to the DB
 		return convertToDTO(savedAlert); // convert the saved entity back to DTO and return it
 	}
 	
-	 // method to update an existing alert by id
+	// This method updates an existing alert by ID using the values from AlertDTO.
+	// If the alert with the given ID doesn't exist, it throws AlertNotFoundException.
 	public AlertDTO updateAlert(Long id, AlertDTO dto) {
-		Optional<Alert> optionalAlert = alertRepository.findById(id); // check if alert exists
-		if (optionalAlert.isPresent()) {
-			Alert alert = optionalAlert.get(); // get the existing alert
-			//update fields with the values from DTO
-			alert.setSymbol(dto.symbol);
-			alert.setAlertType(dto.alertType);
-			alert.setThresholdValue(dto.thresholdValue);
-			Alert updatedAlert = alertRepository.save(alert); // save the updated alert
-            return convertToDTO(updatedAlert); // return the updated alert as dto
-		}
-		return null; // if not found then return null
+	    // Log that the update operation is starting
+	    logger.info("Updating alert with ID: {}", id);
+
+	    // Find the alert by ID; if not found, throw a custom exception and log a warning
+	    Alert alert = alertRepository.findById(id)
+	        .orElseThrow(() -> {
+	            logger.warn("Alert not found with ID: {}", id);
+	            return new AlertNotFoundException("Alert not found with ID: " + id);
+	        });
+	    
+	    
+	    // Update the alert entity fields with the values from the DTO
+	    alert.setSymbol(dto.getSymbol());
+	    alert.setAlertType(dto.getAlertType());
+	    alert.setThresholdValue(dto.getThresholdValue());
+
+
+	    // Save the updated alert back to the database
+	    Alert updatedAlert = alertRepository.save(alert);
+
+	    // Convert the updated entity back to DTO and return it
+	    return convertToDTO(updatedAlert);
 	}
-	// method to delete 
+
+
+	// this method deletes the alert for given id 
 	public void deleteAlert(Long id) {
+		logger.info("Deleting alert with ID: ", id);
 		alertRepository.deleteById(id); // removes the alert from database
 	}
 
 	// helper method to convert an entity to dto
 	private AlertDTO convertToDTO(Alert alert) {
 		AlertDTO dto = new AlertDTO();
-		dto.id = alert.getId();
-		dto.symbol = alert.getSymbol();
-		dto.alertType = alert.getAlertType();
-		dto.thresholdValue = alert.getThresholdValue();
+		dto.setId(alert.getId());
+		dto.setSymbol(alert.getSymbol());
+		dto.setAlertType(alert.getAlertType());
+		dto.setThresholdValue(alert.getThresholdValue());
 		return dto;
 		}
 
 	// helper method to convert an dto to entity
 	private Alert convertToEntity(AlertDTO dto) {
 		Alert alert = new Alert();
-		alert.setId(dto.id);
-		alert.setSymbol(dto.symbol);
-		alert.setAlertType(dto.alertType);
-		alert.setThresholdValue(dto.thresholdValue);
+		alert.setId(dto.getId());
+		alert.setSymbol(dto.getSymbol());
+		alert.setAlertType(dto.getAlertType());
+		alert.setThresholdValue(dto.getThresholdValue());
 		return alert;
 	}
 	
-	// method to evaluate alerts by checking if current price crosses threshold
+	// this method evaluates all alerts and checks if current stock price crosses the threshold value for triggering
 	public void evaluateAlerts() {
+		logger.info("Evaluating alerts...");
 	    // get all alerts from database
 	    List<Alert> alerts = alertRepository.findAll();
 	    // loop through each alert
 	    for (Alert alert : alerts) {
+	    	\
 	        // get current stock price
 	        BigDecimal currentPrice = stockPriceCache.getPrice(alert.getSymbol());
+	        if (currentPrice == null) {
+                logger.error("Price for symbol {} is null; skipping evaluation.", alert.getSymbol());
+                continue;
+            }
 	        boolean isTriggered = false;
 	        // check if alert condition is met
 	        if (alert.getAlertType().equals("Price Above") &&
@@ -99,8 +124,9 @@ public class AlertService {
 	                   currentPrice.doubleValue() < alert.getThresholdValue()) {
 	            isTriggered = true;
 	        }
-	        // if condition is true, print to console 
+	        // if condition is true, then it prints to console 
 	        if (isTriggered) {
+	        	logger.info("ALERT TRIGGERED for {} | Type: {} | Price: {} | Threshold: {}", alert.getSymbol(), alert.getAlertType(), currentPrice, alert.getThresholdValue());
 	            System.out.println("ALERT TRIGGERED for " + alert.getSymbol() + " | Type: " + alert.getAlertType() + " | Price: " + currentPrice + " | Threshold: " + alert.getThresholdValue());
 	        }
 	    }
