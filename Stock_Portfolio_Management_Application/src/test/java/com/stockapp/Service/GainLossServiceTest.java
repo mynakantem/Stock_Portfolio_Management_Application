@@ -115,5 +115,12 @@ public class GainLossServiceTest {
         // Then
         assertEquals(expectedGain, result);
     }
+
 }
+<<<<<<< HEAD
 */
+=======
+
+}
+
+>>>>>>> d5fc7fbe60ec4db987c847c1bfec1e32e3e35a30

@@ -1,10 +1,17 @@
-/*
 package com.stockapp.controller;
 
-public class GainLossController {
-<<<<<<< Updated upstream
+import com.stockapp.model.GainLoss;
+import com.stockapp.service.GainLossService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-=======
+@RestController
+@RequestMapping("/api/gainloss")
+public class GainLossController {
     
     private static final Logger log = LoggerFactory.getLogger(GainLossController.class);
     
@@ -32,6 +39,6 @@ public class GainLossController {
         log.info("Getting daily gain/loss for portfolio: {} on date: {}", portfolioId, date);
         return gainLossService.getDailyPortfolioGainLoss(portfolioId, LocalDate.parse(date));
     }
->>>>>>> Stashed changes
+
 }
-*/
+
