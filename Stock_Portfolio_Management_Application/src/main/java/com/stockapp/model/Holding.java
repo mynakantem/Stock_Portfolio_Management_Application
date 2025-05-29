@@ -1,3 +1,4 @@
+/*
 package com.stockapp.model;
 
 public class Holding {
@@ -77,3 +78,4 @@ public class Holding {
     }
 }
 >>>>>>> Stashed changes
+*/

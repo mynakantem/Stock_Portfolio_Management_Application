@@ -1,3 +1,4 @@
+/*
 package com.stockapp.controller;
 
 public class GainLossController {
@@ -33,3 +34,4 @@ public class GainLossController {
     }
 >>>>>>> Stashed changes
 }
+*/

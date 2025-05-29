@@ -1,3 +1,4 @@
+/*
 package com.stockapp.configuration;
 
 <<<<<<< Updated upstream
@@ -25,3 +26,4 @@ public class SpringSecurityConfig {
     }
 >>>>>>> Stashed changes
 }
+*/
