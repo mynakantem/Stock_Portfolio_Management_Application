@@ -1,4 +1,5 @@
-package com.stockapp.ServiceTest;
+
+package com.stockapp.serviceTest;
 
 import com.stockapp.service.AlertService;
 import com.stockapp.dto.AlertDTO;

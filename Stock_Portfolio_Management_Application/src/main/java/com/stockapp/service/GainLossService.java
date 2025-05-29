@@ -78,3 +78,4 @@ public class GainLossService {
         return gainLossRepository.getTotalPortfolioGain(portfolioId, date);
     }
 }
+}

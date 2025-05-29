@@ -1,78 +1,47 @@
 package com.stockapp.model;
 
-import jakarta.persistence.*;
-import java.math.BigDecimal;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "stock_prices")
 public class StockPrice {
 
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String stockSymbol;
 
-    @Column(nullable = false, length = 10)
-    private String symbol;
+    private double price;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
-
-    @Column(name = "last_updated", nullable = false)
     private LocalDateTime lastUpdated;
-
-    public StockPrice() {
+    
+    public String getStockSymbol() {
+        return stockSymbol;
     }
 
-    public StockPrice(Long id, String symbol, BigDecimal price, LocalDateTime lastUpdated) {
-        this.id = id;
-        this.symbol = symbol;
+    public void setStockSymbol(String stockSymbol) {
+        this.stockSymbol = stockSymbol;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
         this.price = price;
+    }
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
-    }
-
-    // Getters and Setters
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getSymbol() { return symbol; }
-    public void setSymbol(String symbol) { this.symbol = symbol; }
-
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
-
-    public LocalDateTime getLastUpdated() { return lastUpdated; }
-    public void setLastUpdated(LocalDateTime lastUpdated) { this.lastUpdated = lastUpdated; }
-
-    // --- Builder ---
-    public static class Builder {
-        private String symbol;
-        private BigDecimal price;
-        private LocalDateTime lastUpdated;
-
-        public Builder symbol(String symbol) {
-            this.symbol = symbol;
-            return this;
-        }
-
-        public Builder price(BigDecimal price) {
-            this.price = price;
-            return this;
-        }
-
-        public Builder lastUpdated(LocalDateTime lastUpdated) {
-            this.lastUpdated = lastUpdated;
-            return this;
-        }
-
-        public StockPrice build() {
-            return new StockPrice(null, symbol, price, lastUpdated);
-        }
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 }
 
