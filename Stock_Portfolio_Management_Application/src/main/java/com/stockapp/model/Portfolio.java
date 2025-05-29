@@ -1,6 +1,8 @@
 package com.stockapp.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,14 +14,16 @@ public class Portfolio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotBlank(message = "Portfolio name is required")
+    @Size(min = 3, max = 50, message = "Portfolio name must be between 3 and 50 characters")
     @Column(nullable = false)
     private String name;
     
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Holding> holdings = new ArrayList<>();
     
     // Default Constructor
