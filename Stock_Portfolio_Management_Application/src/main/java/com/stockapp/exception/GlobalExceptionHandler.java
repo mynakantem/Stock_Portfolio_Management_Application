@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+
 import java.util.Map;
+
 
 // This handles all exceptions in the entire project
 @RestControllerAdvice
@@ -64,6 +66,7 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     @ExceptionHandler(InvalidRoleException.class)
     public ResponseEntity<Object> handleInvalidRoleException(InvalidRoleException ex) {
         return new ResponseEntity<>(Map.of(
@@ -72,4 +75,5 @@ public class GlobalExceptionHandler {
             "status", 403
             ), HttpStatus.FORBIDDEN);
     }
+
 }
