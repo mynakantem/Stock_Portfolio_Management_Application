@@ -1,9 +1,5 @@
 package com.stockapp.model;
 
-public class Holding {
-
-}
-
 import jakarta.persistence.*;
 
 @Entity

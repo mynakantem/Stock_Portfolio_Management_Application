@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+/*
+=======
 
+>>>>>>> d5fc7fbe60ec4db987c847c1bfec1e32e3e35a30
 package com.stockapp.serviceTest;
 
 import com.stockapp.service.AlertService;
@@ -111,4 +115,4 @@ public class AlertServiceTest {
         verify(alertRepository, times(1)).findAll();
     }
 }
-
+*/

@@ -1,7 +1,5 @@
 package com.stockapp.controller;
 
-public class GainLossController {
-
 import com.stockapp.model.GainLoss;
 import com.stockapp.service.GainLossService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +39,6 @@ public class GainLossController {
         log.info("Getting daily gain/loss for portfolio: {} on date: {}", portfolioId, date);
         return gainLossService.getDailyPortfolioGainLoss(portfolioId, LocalDate.parse(date));
     }
-
-}
 
 }
 
