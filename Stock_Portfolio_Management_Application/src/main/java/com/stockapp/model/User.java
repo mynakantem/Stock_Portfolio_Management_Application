@@ -13,25 +13,33 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+//This is the User entity. It represents users in the database.
+
 @Data
 @Entity
 @Table(name="user",uniqueConstraints= {@UniqueConstraint(columnNames= {"username"}),
 		@UniqueConstraint(columnNames= {"email"})
 })
 public class User {
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	   private Long id;
+	
+ // Username should be unique
 //@Pattern(regexp="^[A-Za-z0-9_]$",message="Username must be Alphanumeric with underscores only")
        private String username;
-	//@NotBlank(message="Email is required!")
-	//@Email(message="Email must be valid")
+//@NotBlank(message="Email is required!")
+//@Email(message="Email must be valid")
 	   private String email;
-	//@NotBlank(message="Password must be required!!!")
-	//@Size(min=7,max=20,message="Password must be between 7 and 20 characters")
-	//@Pattern(regexp="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{7,}$",
-	//message="Password should contain UpperCase and LowerCase letters,a number and special character")
+//@NotBlank(message="Password must be required!!!")
+//@Size(min=7,max=20,message="Password must be between 7 and 20 characters")
+//@Pattern(regexp="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{7,}$",
+//message="Password should contain UpperCase and LowerCase letters,a number and special character")
 	   private String password;	
+	   
+	   //Role can be USER or ADMIN
 	   @Enumerated(EnumType.STRING)
 	   private Role role;
 }

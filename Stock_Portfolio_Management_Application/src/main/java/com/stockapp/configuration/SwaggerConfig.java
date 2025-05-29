@@ -5,6 +5,10 @@ import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * This class enables Swagger UI for automatic API documentation.
+ */
+
 @Configuration
 public class SwaggerConfig {
 	

@@ -1,5 +1,4 @@
-/*
-package com.stockapp.Service;
+package com.stockapp.ServiceTest;
 
 import com.stockapp.model.*;
 import com.stockapp.repository.*;
@@ -52,11 +51,11 @@ public class GainLossServiceTest {
         portfolio.setHoldings(Arrays.asList(holding));
         
         StockPrice stockPrice = new StockPrice();
-        stockPrice.setPrice(BigDecimal.valueOf(120.0));
+        stockPrice.setPrice(120.0);
         
         // Mock repository calls
         when(portfolioRepository.findById(portfolioId)).thenReturn(Optional.of(portfolio));
-        when(stockPriceRepository.findBySymbol("AAPL")).thenReturn(Optional.of(stockPrice));
+        when(stockPriceRepository.findByStockSymbol("AAPL")).thenReturn(Optional.of(stockPrice));
         
         // When
         List<GainLoss> result = gainLossService.calculateStockGainLoss(portfolioId);
@@ -117,10 +116,4 @@ public class GainLossServiceTest {
     }
 
 }
-<<<<<<< HEAD
-*/
-=======
 
-}
-
->>>>>>> d5fc7fbe60ec4db987c847c1bfec1e32e3e35a30

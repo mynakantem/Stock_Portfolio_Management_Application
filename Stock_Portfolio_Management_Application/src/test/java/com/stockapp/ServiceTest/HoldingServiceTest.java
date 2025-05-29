@@ -1,6 +1,7 @@
-package com.stockapp.Service;
+package com.stockapp.ServiceTest;
 
 import com.stockapp.service.HoldingService;
+
 import com.stockapp.service.PortfolioService;
 import com.stockapp.dto.HoldingDTO;
 import com.stockapp.model.Holding;

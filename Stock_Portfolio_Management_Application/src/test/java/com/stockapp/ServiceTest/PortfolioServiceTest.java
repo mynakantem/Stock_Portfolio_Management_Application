@@ -1,4 +1,4 @@
-package com.stockapp.Service;
+package com.stockapp.ServiceTest;
 import com.stockapp.service.HoldingService;
 import com.stockapp.service.PortfolioService;
 import com.stockapp.dto.PortfolioDTO;

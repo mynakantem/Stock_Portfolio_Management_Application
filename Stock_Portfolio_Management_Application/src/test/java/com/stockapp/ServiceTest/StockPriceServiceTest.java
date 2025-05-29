@@ -1,4 +1,4 @@
-package com.stockapp.PricefetcherServiceTest;
+package com.stockapp.ServiceTest;
 
 import com.stockapp.exception.PriceFetchException;
 import com.stockapp.model.StockPrice;

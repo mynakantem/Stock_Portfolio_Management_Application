@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//DTO used to accept user registration input from the client.
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,12 +27,13 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank(message = "Password is required!")
-    // Uncomment if you want strong password validation:
+    // Optional strong password validation
     // @Size(min = 7, max = 20, message = "Password must be between 7 and 20 characters")
     // @Pattern(
     //     regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{7,}$",
     //     message = "Password should contain uppercase, lowercase, a number, and special character"
     // )
+    
     private String password;
     private Role role;
 

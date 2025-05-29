@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-/*
-=======
-
->>>>>>> d5fc7fbe60ec4db987c847c1bfec1e32e3e35a30
-package com.stockapp.serviceTest;
+package com.stockapp.ServiceTest;
 
 import com.stockapp.service.AlertService;
 import com.stockapp.dto.AlertDTO;
@@ -34,42 +29,24 @@ public class AlertServiceTest {
     @Test
     public void testCreateAlert() {
         AlertDTO dto = new AlertDTO();
-        dto.setSymbol("AAPL");
+        dto.setSymbol("HDFC");
         dto.setAlertType("Price Above");
-        dto.setThresholdValue(150.0);
+        dto.setThresholdValue(1920.0);
 
         Alert saved = new Alert();
         saved.setId(1L);
-        saved.setSymbol("AAPL");
+        saved.setSymbol("HDFC");
         saved.setAlertType("Price Above");
-        saved.setThresholdValue(150.0);
+        saved.setThresholdValue(1920.0);
 
         when(alertRepository.save(any(Alert.class))).thenReturn(saved);
 
         AlertDTO result = alertService.createAlert(dto);
 
         assertNotNull(result);
-        assertEquals("AAPL", result.getSymbol());
+        assertEquals("HDFC", result.getSymbol());
         assertEquals("Price Above", result.getAlertType());
-        assertEquals(150.0, result.getThresholdValue());
-    }
+        assertEquals(1920.0, result.getThresholdValue());
 
-
-    @Test
-    public void testEvaluateAlerts() {
-        Alert alert = new Alert();
-        alert.setId(1L);
-        alert.setSymbol("AAPL");
-        alert.setAlertType("Price Above");
-        alert.setThresholdValue(120.0);
-
-        List<Alert> mockList = Collections.singletonList(alert);
-
-        when(alertRepository.findAll()).thenReturn(mockList);
-
-        alertService.evaluateAlerts();
-
-        verify(alertRepository, times(1)).findAll();
     }
 }
-*/

@@ -1,4 +1,4 @@
-package com.stockapp.Service;
+package com.stockapp.ServiceTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

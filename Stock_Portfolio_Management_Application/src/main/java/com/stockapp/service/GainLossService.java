@@ -1,6 +1,7 @@
 package com.stockapp.service;
 
 import com.stockapp.model.*;
+
 import com.stockapp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,9 +37,9 @@ public class GainLossService {
         }
         
         for (Holding holding : portfolio.getHoldings()) {
-            StockPrice stockPrice = stockPriceRepository.findBySymbol(holding.getSymbol()).orElse(null);
+            StockPrice stockPrice = stockPriceRepository.findByStockSymbol(holding.getSymbol()).orElse(null);
             if (stockPrice != null) {
-                Double currentPrice = stockPrice.getPrice().doubleValue();
+            	Double currentPrice = stockPrice.getPrice();
                 Double buyPrice = holding.getBuyPrice();
                 Integer quantity = holding.getQuantity();
                 
@@ -78,4 +79,4 @@ public class GainLossService {
         return gainLossRepository.getTotalPortfolioGain(portfolioId, date);
     }
 }
-}
+

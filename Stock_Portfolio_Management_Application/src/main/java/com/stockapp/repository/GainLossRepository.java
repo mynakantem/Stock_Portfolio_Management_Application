@@ -14,4 +14,6 @@ public interface GainLossRepository extends JpaRepository<GainLoss, Long> {
     
     @Query("SELECT SUM(g.gainAmount) FROM GainLoss g WHERE g.portfolioId = ?1 AND g.date = ?2")
     Double getTotalPortfolioGain(Long portfolioId, LocalDate date);
+    
+
 }

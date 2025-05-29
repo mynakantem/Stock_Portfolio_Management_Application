@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,7 @@ public class AlertService {
 	@Autowired
 	private StockPriceCache stockPriceCache;
 	
-	//  This method retrives all the alerts from database and converts them into AlertDTOs for response.
+	//  this method retrives all the alerts from database and converts them into AlertDTOs for response.
 	public List<AlertDTO> getAllAlerts() {
 		logger.info("Fetching all alerts from the database");
 		 List<Alert> alertList = alertRepository.findAll();
@@ -45,37 +44,37 @@ public class AlertService {
 		return convertToDTO(savedAlert); // convert the saved entity back to DTO and return it
 	}
 	
-	// This method updates an existing alert by ID using the values from AlertDTO.
-	// If the alert with the given ID doesn't exist, it throws AlertNotFoundException.
+	// this method updates an existing alert by ID using the values from AlertDTO.
+	// if the alert with the given ID doesn't exist, it throws AlertNotFoundException.
 	public AlertDTO updateAlert(Long id, AlertDTO dto) {
 	    // Log that the update operation is starting
 	    logger.info("Updating alert with ID: {}", id);
 
-	    // Find the alert by ID; if not found, throw a custom exception and log a warning
+	    // find the alert by ID, if not found, throws a custom exception and logs a warning
 	    Alert alert = alertRepository.findById(id)
 	        .orElseThrow(() -> {
 	            logger.warn("Alert not found with ID: {}", id);
-	            return new AlertNotFoundException("Alert not found with ID: " + id);
+	            return new AlertNotFoundException("Alert not found with ID: {}" + id);
 	        });
 	    
 	    
-	    // Update the alert entity fields with the values from the DTO
+	    // updates the alert entity fields with the values from the DTO
 	    alert.setSymbol(dto.getSymbol());
 	    alert.setAlertType(dto.getAlertType());
 	    alert.setThresholdValue(dto.getThresholdValue());
 
 
-	    // Save the updated alert back to the database
+	    // save the updated alert back to the database
 	    Alert updatedAlert = alertRepository.save(alert);
 
-	    // Convert the updated entity back to DTO and return it
+	    // convert the updated entity back to DTO and return it
 	    return convertToDTO(updatedAlert);
 	}
 
 
 	// this method deletes the alert for given id 
 	public void deleteAlert(Long id) {
-		logger.info("Deleting alert with ID: ", id);
+		logger.info("Deleting alert with ID: {}", id);
 		alertRepository.deleteById(id); // removes the alert from database
 	}
 
@@ -106,7 +105,6 @@ public class AlertService {
 	    List<Alert> alerts = alertRepository.findAll();
 	    // loop through each alert
 	    for (Alert alert : alerts) {
-	    	\
 	        // get current stock price
 	        BigDecimal currentPrice = stockPriceCache.getPrice(alert.getSymbol());
 	        if (currentPrice == null) {
