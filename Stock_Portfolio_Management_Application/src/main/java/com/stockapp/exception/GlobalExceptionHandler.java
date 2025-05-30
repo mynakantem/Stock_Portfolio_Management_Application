@@ -38,14 +38,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, ex.getStatus());
     }
 
-    @ExceptionHandler(InvalidRoleException.class)
-    public ResponseEntity<Object> handleInvalidRoleException(InvalidRoleException ex) {
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Object> handleInvalidRoleException(InvalidCredentialsException ex) {
         return new ResponseEntity<>(Map.of(
             "message", ex.getMessage(),
             "errorCode", "INVALID_ROLE",
             "status", HttpStatus.FORBIDDEN.value()
         ), HttpStatus.FORBIDDEN);
     }
+   
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {

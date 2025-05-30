@@ -5,9 +5,8 @@ import com.stockapp.repository.AlertRepository;
 import com.stockapp.model.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.stockapp.service.StockPriceCache;
+import com.stockapp.repository.StockPriceRepository;
 import com.stockapp.exception.AlertNotFoundException;
-import java.math.BigDecimal; 
 
 import java.util.List;
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ public class AlertService {
 	@Autowired
 	private AlertRepository alertRepository;
 	@Autowired
-	private StockPriceCache stockPriceCache;
+	private StockPriceRepository stockPriceRepository;
 	
 	//  this method retrives all the alerts from database and converts them into AlertDTOs for response.
 	public List<AlertDTO> getAllAlerts() {
@@ -106,7 +105,9 @@ public class AlertService {
 	    // loop through each alert
 	    for (Alert alert : alerts) {
 	        // get current stock price
-	        BigDecimal currentPrice = stockPriceCache.getPrice(alert.getSymbol());
+	    	Double currentPrice = stockPriceRepository.findByStockSymbol(alert.getSymbol())
+	    		    .map(stockPrice -> stockPrice.getPrice())
+	    		    .orElse(null);
 	        if (currentPrice == null) {
                 logger.error("Price for symbol {} is null; skipping evaluation.", alert.getSymbol());
                 continue;

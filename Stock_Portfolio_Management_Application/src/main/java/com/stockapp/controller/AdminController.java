@@ -14,6 +14,7 @@ import com.stockapp.dto.AuthRequest;
 import com.stockapp.dto.AuthResponse;
 import com.stockapp.dto.RegisterRequest;
 import com.stockapp.exception.InvalidRoleException;
+import com.stockapp.exception.UserNotFoundException;
 import com.stockapp.model.User;
 import com.stockapp.repository.UserRepository;
 import com.stockapp.service.UserService;
@@ -32,6 +33,9 @@ public class AdminController {
     @Autowired
     public UserRepository userrepo;
   
+    
+
+    
    
   
   //use get mapping to get all the registered users
@@ -43,22 +47,23 @@ public class AdminController {
         return ResponseEntity.ok(users);
     }
   //use get mapping to get user by usernames
-    @GetMapping("/user/{username}")
-    public ResponseEntity<?> getUserByName(@PathVariable String username) {
-        logger.info("Fetching user by username: {}", username);
-        Optional<User> user = userrepo.findByUsername(username);
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        logger.info("Fetching user by id: {}", id);
+        Optional<User> user = userrepo.findById(id);
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
         } else {
-            logger.warn("User not found with username: {}", username);
-            return ResponseEntity.ok("User not found");
+            logger.warn("User not found with username: {}",id);
+            return ResponseEntity.ok("User Id not found");
         }
     }
   //use put mapping to update user by their id
     @PutMapping("/{id}/role")
-    public ResponseEntity<User> updateUser(@Valid @PathVariable Long id, @RequestBody RegisterRequest updatedUser) {
+    public ResponseEntity<User> updateUser(@Valid @PathVariable Long id, @RequestBody RegisterRequest updatedUser, @RequestParam String email) {
         logger.info("Request to update user ID: {}", id);
-        User updated = userservice.updateUserById(id, updatedUser);
+        //trail and error 
+        User updated = userservice.updateUserById(id, updatedUser,email);
         return ResponseEntity.ok(updated);
     }
 

@@ -3,7 +3,7 @@ package com.stockapp.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Alerts")
+@Table(name = "alerts")
 public class Alert {
 	 @Id
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)

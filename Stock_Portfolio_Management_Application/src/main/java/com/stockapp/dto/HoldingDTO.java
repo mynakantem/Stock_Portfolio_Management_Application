@@ -1,5 +1,7 @@
 package com.stockapp.dto;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +30,9 @@ public class HoldingDTO {
     private Long portfolioId;
 
     // Optional values returned for display purposes
-    private Double currentPrice;
+    private double CurrentPrice;
     private Double gainAmount;
+    private String StockSymbol;
+
     private Double gainPercentage;
 }

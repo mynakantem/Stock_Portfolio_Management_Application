@@ -3,8 +3,6 @@ package com.stockapp.dto;
 import java.time.LocalDate;
 import java.util.List;
 
-//DTO used to return summary details of all portfolios for a user.
-
 public class PortfolioSummaryDTO {
     
     private Long userId;

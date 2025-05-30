@@ -14,7 +14,7 @@ import com.stockapp.exception.ApiException;
 import com.stockapp.exception.InvalidCredentialsException;
 import com.stockapp.exception.InvalidRoleException;
 import com.stockapp.exception.UserAlreadyExistsException;
-import com.stockapp.exception.UsernameNotFoundException;
+import com.stockapp.exception.UserNotFoundException;
 import com.stockapp.model.User;
 import com.stockapp.repository.UserRepository;
 
@@ -28,6 +28,16 @@ public class UserService implements UserServiceInterface {
 
     @Autowired
     private BCryptPasswordEncoder passwordencoder;
+    
+    private void Authorization(String email) {
+    	User user = userrepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User with this email is not Found"));
+    	
+    	if(!"ADMIN".equals(String.valueOf(user.getRole()))){
+    		logger.warn("Unauthorized access attempt by the user with email: {}", email);
+    		throw new InvalidRoleException("Only ADMINS are authorized to perform this action");
+    	}
+    	
+    }
 
     // Logic for user to register with appropriate credentials
     @Override
@@ -71,7 +81,7 @@ public class UserService implements UserServiceInterface {
 
             if (user == null) {
                 logger.error("Login failed. Username not found: {}", request.getUsername());
-                throw new UsernameNotFoundException(request.getUsername());
+                throw new UserNotFoundException(request.getUsername());
             }
 
             if (user.getPassword() == null) {
@@ -99,21 +109,75 @@ public class UserService implements UserServiceInterface {
     }
 
     // Logic to update the user
-    public User updateUserById(Long id, RegisterRequest updatedUser) {
-        logger.info("Attempting to update user with ID: {}", id);
+//    public User updateUserById(Long id, RegisterRequest updatedUser, String email) {
+//        logger.info("Attempting to update user with ID: {}", id);
+//
+//        User existingUser = userrepo.findById(id).orElse(null);
+//
+//        if (existingUser == null) {
+//            logger.warn("User not found with ID: {}", id);
+//            throw new ApiException("User not found", "NOT_FOUND", HttpStatus.NOT_FOUND);
+//        }
+//
+////        if (!"ADMIN".equals(existingUser.getRole().name())) {
+////            logger.warn("User with ID {} does not have permission to update", id);
+////            throw new InvalidRoleException("Access denied: only ADMIN users can perform this update.");
+////        }
+//
+//        if (updatedUser.getUsername() != null) {
+//            existingUser.setUsername(updatedUser.getUsername());
+//        }
+//        if (updatedUser.getEmail() != null) {
+//            existingUser.setEmail(updatedUser.getEmail());
+//        }
+//        if (updatedUser.getPassword() != null) {
+//            existingUser.setPassword(encodePassword(updatedUser.getPassword()));
+//            
+//        }
+//        
+//        
+//        //updated
+//        User maybeadmin = userrepo.findByEmail(email).orElseThrow(()-> new InvalidRoleException("Only adminsa can able to update this field"));
+//        if (updatedUser.getRole() != null) {
+//        	Authorization(maybeadmin.getEmail());
+//            existingUser.setRole(updatedUser.getRole());
+//        }
+//
+//        User updated = userrepo.save(existingUser);
+//        logger.info("User updated successfully: {}", updated.getUsername());
+//
+//        return updated;
+//    }
+    public User updateUserById(Long id, RegisterRequest updatedUser, String requesterEmail) {
+        logger.info("User update requested by: {}", requesterEmail);
 
-        User existingUser = userrepo.findById(id).orElse(null);
+        // 1. Get the requester info
+        User requester = userrepo.findByEmail(requesterEmail)
+            .orElseThrow(() -> new UserNotFoundException("Requester not found"));
 
-        if (existingUser == null) {
-            logger.warn("User not found with ID: {}", id);
-            throw new ApiException("User not found", "NOT_FOUND", HttpStatus.NOT_FOUND);
+        boolean isAdmin = "ADMIN".equals(requester.getRole().name());
+        System.out.println(requester.getRole().name());
+
+        // 2. Get the target user to update
+        User existingUser = userrepo.findById(id)
+            .orElseThrow(() -> new ApiException("User not found", "NOT_FOUND", HttpStatus.NOT_FOUND));
+
+        // 3. Check permissions
+        if (!isAdmin) {
+            // Non-admin trying to update someone else
+            if (!requester.getId().equals(id)) {
+                logger.warn("Unauthorized update attempt by non-admin user: {}", requesterEmail);
+                throw new InvalidRoleException("You are not authorized to update other users.");
+            }
+
+            // Non-admin trying to change role
+            if (updatedUser.getRole() != null) {
+                logger.warn("Non-admin user {} attempted to change role", requesterEmail);
+                throw new InvalidRoleException("Only admins can update the role field.");
+            }
         }
 
-        if (!"ADMIN".equals(existingUser.getRole().name())) {
-            logger.warn("User with ID {} does not have permission to update", id);
-            throw new InvalidRoleException("Access denied: only ADMIN users can perform this update.");
-        }
-
+        // 4. Perform updates (based on what fields are not null)
         if (updatedUser.getUsername() != null) {
             existingUser.setUsername(updatedUser.getUsername());
         }
@@ -123,7 +187,8 @@ public class UserService implements UserServiceInterface {
         if (updatedUser.getPassword() != null) {
             existingUser.setPassword(encodePassword(updatedUser.getPassword()));
         }
-        if (updatedUser.getRole() != null) {
+
+        if (isAdmin && updatedUser.getRole() != null) {
             existingUser.setRole(updatedUser.getRole());
         }
 
@@ -132,6 +197,7 @@ public class UserService implements UserServiceInterface {
 
         return updated;
     }
+
 
     // Logic to encode the password for security
     public String encodePassword(String rawPassword) {

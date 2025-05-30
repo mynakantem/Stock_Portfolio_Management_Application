@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-//DTO to represent portfolio details, including holdings and total gain.
-
+/**
+ * DTO to represent portfolio details, including holdings and total gain.
+ */
 @Data
 @NoArgsConstructor
 public class PortfolioDTO {

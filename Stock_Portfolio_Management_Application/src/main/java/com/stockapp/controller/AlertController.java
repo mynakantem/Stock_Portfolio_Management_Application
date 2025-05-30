@@ -45,4 +45,3 @@ public class AlertController {
 	    alertService.evaluateAlerts();
 	}
 }
-

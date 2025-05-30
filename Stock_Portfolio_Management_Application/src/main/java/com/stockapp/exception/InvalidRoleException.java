@@ -1,7 +1,5 @@
 package com.stockapp.exception;
 
-
-
 import org.springframework.http.HttpStatus;
 
 public class InvalidRoleException extends ApiException {
