@@ -1,64 +1,38 @@
 package com.stockapp.dto;
 
+import java.math.BigDecimal;
+
+import jakarta.validation.constraints.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * DTO used to send or receive holding data from the client.
+ */
+@Data
+@NoArgsConstructor
 public class HoldingDTO {
-    
+
     private Long id;
+
+    @NotBlank(message = "Stock symbol is required")
+    @Pattern(regexp = "^[A-Z]{1,10}$", message = "Symbol must be 1-10 uppercase letters")
     private String symbol;
+
+    @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be at least 1")
     private Integer quantity;
+
+    @NotNull(message = "Buy price is required")
+    @DecimalMin(value = "0.01", message = "Buy price must be greater than 0")
     private Double buyPrice;
+
     private Long portfolioId;
-    
-    // Default Constructor
-    public HoldingDTO() {
-    }
-    
-    // Constructor with parameters
-    public HoldingDTO(Long id, String symbol, Integer quantity, Double buyPrice, Long portfolioId) {
-        this.id = id;
-        this.symbol = symbol;
-        this.quantity = quantity;
-        this.buyPrice = buyPrice;
-        this.portfolioId = portfolioId;
-    }
-    
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getSymbol() {
-        return symbol;
-    }
-    
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-    
-    public Integer getQuantity() {
-        return quantity;
-    }
-    
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-    
-    public Double getBuyPrice() {
-        return buyPrice;
-    }
-    
-    public void setBuyPrice(Double buyPrice) {
-        this.buyPrice = buyPrice;
-    }
-    
-    public Long getPortfolioId() {
-        return portfolioId;
-    }
-    
-    public void setPortfolioId(Long portfolioId) {
-        this.portfolioId = portfolioId;
-    }
+
+    // Optional values returned for display purposes
+    private double CurrentPrice;
+    private Double gainAmount;
+    private String StockSymbol;
+
+    private Double gainPercentage;
 }

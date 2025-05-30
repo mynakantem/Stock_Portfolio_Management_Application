@@ -1,39 +1,47 @@
 package com.stockapp.dto;
 
+import java.time.LocalDate;
+
 public class GainLossDTO {
     
-    private String portfolioName;
+    private Long id;
+    private Long portfolioId;
     private String symbol;
-    private Integer quantity;
-    private Double buyPrice;
-    private Double currentPrice;
     private Double gainAmount;
     private Double gainPercentage;
+    private Double dailyChange;
+    private LocalDate date;
     
     // Default Constructor
     public GainLossDTO() {
     }
     
-    // Constructor with all fields
-    public GainLossDTO(String portfolioName, String symbol, Integer quantity, 
-                       Double buyPrice, Double currentPrice, Double gainAmount, 
-                       Double gainPercentage) {
-        this.portfolioName = portfolioName;
+    // Constructor with parameters
+    public GainLossDTO(Long id, Long portfolioId, String symbol, Double gainAmount, Double gainPercentage, Double dailyChange, LocalDate date) {
+        this.id = id;
+        this.portfolioId = portfolioId;
         this.symbol = symbol;
-        this.quantity = quantity;
-        this.buyPrice = buyPrice;
-        this.currentPrice = currentPrice;
         this.gainAmount = gainAmount;
         this.gainPercentage = gainPercentage;
+        this.dailyChange = dailyChange;
+        this.date = date;
     }
     
     // Getters and Setters
-    public String getPortfolioName() {
-        return portfolioName;
+    public Long getId() {
+        return id;
     }
     
-    public void setPortfolioName(String portfolioName) {
-        this.portfolioName = portfolioName;
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public Long getPortfolioId() {
+        return portfolioId;
+    }
+    
+    public void setPortfolioId(Long portfolioId) {
+        this.portfolioId = portfolioId;
     }
     
     public String getSymbol() {
@@ -42,30 +50,6 @@ public class GainLossDTO {
     
     public void setSymbol(String symbol) {
         this.symbol = symbol;
-    }
-    
-    public Integer getQuantity() {
-        return quantity;
-    }
-    
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-    
-    public Double getBuyPrice() {
-        return buyPrice;
-    }
-    
-    public void setBuyPrice(Double buyPrice) {
-        this.buyPrice = buyPrice;
-    }
-    
-    public Double getCurrentPrice() {
-        return currentPrice;
-    }
-    
-    public void setCurrentPrice(Double currentPrice) {
-        this.currentPrice = currentPrice;
     }
     
     public Double getGainAmount() {
@@ -82,5 +66,21 @@ public class GainLossDTO {
     
     public void setGainPercentage(Double gainPercentage) {
         this.gainPercentage = gainPercentage;
+    }
+    
+    public Double getDailyChange() {
+        return dailyChange;
+    }
+    
+    public void setDailyChange(Double dailyChange) {
+        this.dailyChange = dailyChange;
+    }
+    
+    public LocalDate getDate() {
+        return date;
+    }
+    
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 }

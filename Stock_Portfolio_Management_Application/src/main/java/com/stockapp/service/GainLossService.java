@@ -1,123 +1,134 @@
 package com.stockapp.service;
 
 import com.stockapp.dto.GainLossDTO;
-import com.stockapp.model.*;
-import com.stockapp.repository.*;
+import com.stockapp.model.GainLoss;
+import com.stockapp.model.Holding;
+import com.stockapp.model.StockPrice;
+import com.stockapp.repository.GainLossRepository;
+import com.stockapp.repository.HoldingRepository;
+import com.stockapp.repository.StockPriceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GainLossService {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(GainLossService.class);
+
     @Autowired
     private GainLossRepository gainLossRepository;
-    
+
     @Autowired
-    private PortfolioRepository portfolioRepository;
-    
+    private HoldingRepository holdingRepository;
+
     @Autowired
     private StockPriceRepository stockPriceRepository;
-    
-    // Calculate gain/loss for a specific portfolio
-    public List<GainLossDTO> calculateGainLoss(Long portfolioId) {
-        List<GainLossDTO> gainLossList = new ArrayList<>();
-        
-        // Get portfolio with holdings
-        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElse(null);
-        if (portfolio == null) {
-            return gainLossList;
-        }
-        
-        // Calculate gain/loss for each holding
-        for (Holding holding : portfolio.getHoldings()) {
-            // Get current stock price
-        	StockPrice stockPrice = stockPriceRepository.findBySymbol(holding.getSymbol()).orElse(null);
-        	if (stockPrice != null) {
-                // Calculate gain and percentage
-                Double currentPrice = stockPrice.getPrice().doubleValue();
-                Double buyPrice = holding.getBuyPrice();
-                Integer quantity = holding.getQuantity();
-                
-                // Formula: gain = (currentPrice - buyPrice) * quantity
-                Double gainAmount = (currentPrice - buyPrice) * quantity;
-                
-                // Formula: percentage = (gain / (buyPrice * quantity)) * 100
-                Double gainPercentage = (gainAmount / (buyPrice * quantity)) * 100;
-                
-                // Create DTO
-                GainLossDTO dto = new GainLossDTO();
-                dto.setPortfolioName(portfolio.getName());
-                dto.setSymbol(holding.getSymbol());
-                dto.setQuantity(quantity);
-                dto.setBuyPrice(buyPrice);
-                dto.setCurrentPrice(currentPrice);
-                dto.setGainAmount(gainAmount);
-                dto.setGainPercentage(gainPercentage);
-                
-                gainLossList.add(dto);
-                
-                // Save to database
-                GainLoss gainLoss = new GainLoss();
-                gainLoss.setPortfolioName(portfolio.getName());
-                gainLoss.setSymbol(holding.getSymbol());
-                gainLoss.setQuantity(quantity);
-                gainLoss.setBuyPrice(buyPrice);
-                gainLoss.setCurrentPrice(currentPrice);
-                gainLoss.setGainAmount(gainAmount);
-                gainLoss.setGainPercentage(gainPercentage);
-                
-                gainLossRepository.save(gainLoss);
+
+    // Calculate and save gain/loss for all holdings in a portfolio
+    public void calculateAndSaveGainLoss(Long portfolioId) {
+        logger.info("Calculating gain/loss for portfolio: {}", portfolioId);
+
+        List<Holding> holdings = holdingRepository.findByPortfolioId(portfolioId);
+        LocalDate today = LocalDate.now();
+
+        for (Holding holding : holdings) {
+            StockPrice stockPrice = stockPriceRepository.findByStockSymbol(holding.getSymbol()).orElse(null);
+
+            if (stockPrice != null) {
+                double currentPrice = stockPrice.getPrice();
+                double buyPrice = holding.getBuyPrice();
+                int quantity = holding.getQuantity();
+
+                double gainAmount = (currentPrice - buyPrice) * quantity;
+                double gainPercentage = (gainAmount / (buyPrice * quantity)) * 100;
+
+                GainLoss previousGainLoss = gainLossRepository.findByPortfolioIdAndSymbolAndDate(
+                        portfolioId, holding.getSymbol(), today.minusDays(1));
+
+                double dailyChange = previousGainLoss != null
+                        ? Math.abs(gainAmount - previousGainLoss.getGainAmount())
+                        : Math.abs(gainAmount);
+
+                GainLoss existingRecord = gainLossRepository.findByPortfolioIdAndSymbolAndDate(
+                        portfolioId, holding.getSymbol(), today);
+
+                if (existingRecord != null) {
+                    // Update
+                    existingRecord.setGainAmount(gainAmount);
+                    existingRecord.setGainPercentage(gainPercentage);
+                    existingRecord.setDailyChange(dailyChange);
+                    gainLossRepository.save(existingRecord);
+                    logger.info("Updated gain/loss for symbol: {} in portfolio: {}", holding.getSymbol(), portfolioId);
+                } else {
+                    // Create and save
+                    GainLoss newGainLoss = new GainLoss(
+                            null,
+                            portfolioId,
+                            holding.getSymbol(),
+                            gainAmount,
+                            gainPercentage,
+                            dailyChange,
+                            today
+                    );
+                    gainLossRepository.save(newGainLoss); // ✅ FIXED: save new record
+                    logger.info("Created new gain/loss for symbol: {} in portfolio: {}", holding.getSymbol(), portfolioId);
+                }
+            } else {
+                logger.warn("No stock price found for symbol: {}", holding.getSymbol());
             }
         }
-        
-        return gainLossList;
     }
-    
-    // Get all gain/loss records
-    public List<GainLossDTO> getAllGainLoss() {
-        List<GainLossDTO> dtoList = new ArrayList<>();
-        List<GainLoss> gainLossList = gainLossRepository.findAll();
-        
-        for (GainLoss gainLoss : gainLossList) {
-            GainLossDTO dto = new GainLossDTO();
-            dto.setPortfolioName(gainLoss.getPortfolioName());
-            dto.setSymbol(gainLoss.getSymbol());
-            dto.setQuantity(gainLoss.getQuantity());
-            dto.setBuyPrice(gainLoss.getBuyPrice());
-            dto.setCurrentPrice(gainLoss.getCurrentPrice());
-            dto.setGainAmount(gainLoss.getGainAmount());
-            dto.setGainPercentage(gainLoss.getGainPercentage());
-            
-            dtoList.add(dto);
-        }
-        
-        return dtoList;
+
+    // Get gain/loss data for a portfolio on a specific date
+    public List<GainLossDTO> getGainLossForPortfolio(Long portfolioId, LocalDate date) {
+        logger.info("Fetching gain/loss for portfolio: {} on date: {}", portfolioId, date);
+
+        List<GainLoss> gainLossList = gainLossRepository.findByPortfolioIdAndDate(portfolioId, date);
+
+        return gainLossList.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
-    
-    // Calculate total portfolio gain/loss
-    public GainLossDTO calculateTotalPortfolioGainLoss(Long portfolioId) {
-        List<GainLossDTO> stockGainLossList = calculateGainLoss(portfolioId);
-        
-        Double totalGainAmount = 0.0;
-        Double totalInvested = 0.0;
-        Double totalCurrentValue = 0.0;
-        
-        for (GainLossDTO dto : stockGainLossList) {
-            totalGainAmount += dto.getGainAmount();
-            totalInvested += dto.getBuyPrice() * dto.getQuantity();
-            totalCurrentValue += dto.getCurrentPrice() * dto.getQuantity();
-        }
-        
-        Double totalGainPercentage = (totalGainAmount / totalInvested) * 100;
-        
-        GainLossDTO totalDto = new GainLossDTO();
-        totalDto.setPortfolioName("TOTAL");
-        totalDto.setSymbol("ALL");
-        totalDto.setGainAmount(totalGainAmount);
-        totalDto.setGainPercentage(totalGainPercentage);
-        
-        return totalDto;
+
+    // Get total portfolio gain/loss for a specific date
+    public Double getTotalPortfolioGain(Long portfolioId, LocalDate date) {
+        logger.info("Calculating total portfolio gain for portfolio: {} on date: {}", portfolioId, date);
+
+        Double totalGain = gainLossRepository.getTotalPortfolioGain(portfolioId, date);
+        return totalGain != null ? totalGain : 0.0;
+    }
+
+    // Get gain/loss for a specific holding
+    public GainLossDTO getGainLossForHolding(Long portfolioId, String symbol, LocalDate date) {
+        logger.info("Fetching gain/loss for symbol: {} in portfolio: {} on date: {}", symbol, portfolioId, date);
+
+        GainLoss gainLoss = gainLossRepository.findByPortfolioIdAndSymbolAndDate(portfolioId, symbol, date);
+
+        return gainLoss != null ? convertToDTO(gainLoss) : null;
+    }
+
+    // Delete all gain/loss records for a portfolio
+    public void deleteGainLossForPortfolio(Long portfolioId) {
+        logger.info("Deleting all gain/loss records for portfolio: {}", portfolioId);
+        gainLossRepository.deleteByPortfolioId(portfolioId);
+    }
+
+    // Helper method to convert GainLoss to GainLossDTO
+    private GainLossDTO convertToDTO(GainLoss gainLoss) {
+        GainLossDTO dto = new GainLossDTO();
+        dto.setId(gainLoss.getId());
+        dto.setPortfolioId(gainLoss.getPortfolioId());
+        dto.setSymbol(gainLoss.getSymbol());
+        dto.setGainAmount(gainLoss.getGainAmount());
+        dto.setGainPercentage(gainLoss.getGainPercentage());
+        dto.setDailyChange(gainLoss.getDailyChange());
+        dto.setDate(gainLoss.getDate());
+        return dto;
     }
 }

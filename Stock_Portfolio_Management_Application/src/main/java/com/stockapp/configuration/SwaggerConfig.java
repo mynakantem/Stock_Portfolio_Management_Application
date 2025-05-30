@@ -7,15 +7,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
-	
-	@Bean
-	public OpenAPI apiInfo() {
-		return new OpenAPI()
-				.info(new Info()
-						.title("Stock Portfolio Monitoring API")
-						.description("Auto-generated documentation for all backend API's")
-						.version("v1.0"));
-		
-	}
-
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("StockApp API")
+                        .version("1.0")
+                        .description("API documentation for StockApp"));
+    }
 }

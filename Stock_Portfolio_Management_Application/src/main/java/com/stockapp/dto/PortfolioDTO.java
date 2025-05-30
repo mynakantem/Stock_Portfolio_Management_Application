@@ -1,34 +1,30 @@
 package com.stockapp.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+/**
+ * DTO to represent portfolio details, including holdings and total gain.
+ */
+@Data
+@NoArgsConstructor
 public class PortfolioDTO {
-    
+
     private Long id;
+
+    private Long userId;
+
+    @NotBlank(message = "Portfolio name is required")
+    @Size(min = 3, max = 50, message = "Portfolio name must be between 3 and 50 characters")
     private String name;
-    
-    // Default Constructor
-    public PortfolioDTO() {
-    }
-    
-    // Constructor with parameters
-    public PortfolioDTO(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-    
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
+
+    // List of holdings in this portfolio (populated when requested)
+    private List<HoldingDTO> holdings;
+
+    // Optional: Calculated total gain amount for the current day
+    private Double totalGainAmount;
 }
